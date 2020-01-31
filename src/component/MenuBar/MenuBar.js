@@ -7,12 +7,12 @@ class MenuBar extends React.Component {
         return (
             <Fragment>
                 <Navbar bg="light" expand="lg">
-                    <Navbar.Brand href="#home">Echo By Emily</Navbar.Brand>
+                    <Navbar.Brand href="/">Echo By Emily</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                            <Nav.Link href="#home">Intro</Nav.Link>
-                            <Nav.Link href="#link">Chat</Nav.Link>
+                            <Nav.Link href="/intro">Intro</Nav.Link>
+                            <Nav.Link href="/chat">Chat</Nav.Link>
                             {/*                             
                             <NavDropdown title="Dropdown" id="basic-nav-dropdown">
                                 <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
