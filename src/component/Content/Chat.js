@@ -1,15 +1,24 @@
 import React, { Fragment } from 'react';
 import { InputGroup, FormControl, Button, Card } from 'react-bootstrap';
-
+import { List, Map  } from 'immutable';
 
 class Chat extends React.Component {
-    
+    id = 0;
     constructor(props) {
         super(props);
 
         this.state = {
-            userMsg: '',
-            emilyMsg: ''
+            data: Map(
+                {
+                    msgs: List([
+                        Map({
+                            id: 0,
+                            user: 'user0',
+                            text: 'text0'
+                        })
+                    ])
+                }
+            )
         }
         this.putUserMsg = this.putUserMsg.bind(this);
     }
@@ -17,14 +26,16 @@ class Chat extends React.Component {
     userMsg = '';
 
     async putUserMsg(msg) {
-        if(this.state.userMsg !== msg){
-            this.setState(
-                {userMsg: msg}
-            );
-            this.setState(
-                {emilyMsg: await this.putEmilyMsg(msg)}
-            );
-        }
+        const { data } = this.state;
+        const msgs = data.get('msgs');
+        alert(msgs);
+        this.setState({
+            msgs: msgs.push({
+                id: this.id++,
+                user: 'user',
+                text: msg
+            })
+        });
     }
 
     async putEmilyMsg(msg) {
@@ -32,14 +43,24 @@ class Chat extends React.Component {
     }
 
     render() {
+        const { data } = this.state;
         return (
             <div>
-                <UserSpeakPan
-                    text={this.state.userMsg}
-                />
-                <EmilySpeakPan 
-                    text={this.state.emilyMsg}
-                />
+                {data.get('msgs').map((msg, i) => {
+                        return (
+                            <ChatPane  
+                                user={msg.user}
+                                text={msg.text}
+                                key={i}
+                            />
+                        );
+                    }
+                )}
+                
+                {/* <ChatPane
+                    user={this.state[0].user}
+                    text={this.state[0].text}
+                /> */}
                 <TextInput 
                     putUserMsg={this.putUserMsg}
                 />
@@ -67,7 +88,9 @@ class TextInput extends React.Component {
         super(props);
         
         this.state = {
-            value: ''
+            data: Map({
+                value: ''
+            })
         };
         
         this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -82,8 +105,11 @@ class TextInput extends React.Component {
     }
 
     handleKeyPress = (e) => {
+        const { data } = this.state;
         if(e.charCode === 13) {
-            this.setState({value: e.target.value});
+            this.setState({
+                data: data.set('value', e.target.value)
+            });
             e.target.value = '';
         }
     }
@@ -107,7 +133,7 @@ class TextInput extends React.Component {
     }
 }
 
-class UserSpeakPan extends React.Component {
+class ChatPane extends React.Component {
 
     constructor(props) {
         super(props);
@@ -120,7 +146,7 @@ class UserSpeakPan extends React.Component {
         return (
             <Fragment>
                 <Card border="primary" style={{ width: '18rem', right: 0, }}>
-                    <Card.Header>User</Card.Header>
+                    <Card.Header>{this.props.user}</Card.Header>
                     <Card.Body>
                         <Card.Text>
                             {this.props.text}
@@ -132,29 +158,4 @@ class UserSpeakPan extends React.Component {
     }
 }
 
-class EmilySpeakPan extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.text = props.text;
-        this.valGbnCd = props.valGbnCd;
-    }
-    text = '';
-    valGbnCd = '';
-    render() {
-        return (
-            <Fragment>
-                <Card border="info" style={{ width: '18rem', left: 0 }}>
-                    <Card.Header>Emily</Card.Header>
-                    <Card.Body>
-                        
-                        <Card.Text>
-                            {this.props.text}
-                        </Card.Text>
-                    </Card.Body>
-                </Card>
-            </Fragment>
-        )
-    }
-}
 export default Chat;
