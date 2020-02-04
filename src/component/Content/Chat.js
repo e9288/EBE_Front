@@ -11,11 +11,11 @@ class Chat extends React.Component {
             data: Map(
                 {
                     msgs: List([
-                        Map({
+                        {
                             id: 0,
                             user: 'user0',
                             text: 'text0'
-                        })
+                        }
                     ])
                 }
             )
@@ -25,17 +25,20 @@ class Chat extends React.Component {
 
     userMsg = '';
 
-    async putUserMsg(msg) {
+    putUserMsg = (msg) => {
+        this.userMsg = msg;
         const { data } = this.state;
         const msgs = data.get('msgs');
-        alert(msgs);
-        this.setState({
-            msgs: msgs.push({
-                id: this.id++,
-                user: 'user',
-                text: msg
-            })
-        });
+        if(msg != null && msg != '' && this.userMsg != msg){
+            console.log(msg);
+            this.setState({
+                msgs: msgs.push({
+                    id: ++this.id,
+                    user: 'user',
+                    text: msg
+                })
+            });
+        }
     }
 
     async putEmilyMsg(msg) {
@@ -44,14 +47,16 @@ class Chat extends React.Component {
 
     render() {
         const { data } = this.state;
+        
+        console.log(data.get('msgs'));
         return (
             <div>
-                {data.get('msgs').map((msg, i) => {
+                {data.get('msgs').map((msg) => {
                         return (
-                            <ChatPane  
+                            <ChatPane
                                 user={msg.user}
                                 text={msg.text}
-                                key={i}
+                                key={msg.id}
                             />
                         );
                     }
@@ -97,11 +102,9 @@ class TextInput extends React.Component {
     }
 
     componentDidUpdate() {
-        this.putUserMsg();
-    }
-
-    putUserMsg = () => {
-        this.props.putUserMsg(this.state.value);
+        const { data } = this.state;
+        console.log('componentDidMount ' + data.get('value'));
+        this.props.putUserMsg(data.get('value'));
     }
 
     handleKeyPress = (e) => {
@@ -137,11 +140,7 @@ class ChatPane extends React.Component {
 
     constructor(props) {
         super(props);
-        this.text = props.text;
-        this.valGbnCd = props.valGbnCd;
     }
-    text = '';
-    valGbnCd = '';
     render() {
         return (
             <Fragment>
@@ -159,3 +158,29 @@ class ChatPane extends React.Component {
 }
 
 export default Chat;
+
+
+
+
+
+//경민's
+putUserMsg = (msg) => {
+    this.userMsg = msg;
+
+    const {data} = this.state;
+    const msgs = [...data.msgs];
+    let obj = {id: ++this.id, user: 'user', text:msg}
+    msgs.push(obj);
+
+    
+    if(msg != null && msg != '' && this.userMsg != msg){
+        console.log(msg);
+        this.setState((prevState)=>({
+            ...prevState,
+            data : {
+                ...prevState.data,
+                msgs : msgs
+            }
+        }))
+    }
+}
