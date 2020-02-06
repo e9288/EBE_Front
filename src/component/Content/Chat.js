@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
-import { InputGroup, FormControl, Button, Card } from 'react-bootstrap';
-import { List, Map  } from 'immutable';
+import { InputGroup, FormControl, Button, Card, Toast } from 'react-bootstrap';
+import { List, Map } from 'immutable';
+import './Chat.css';
 
 class Chat extends React.Component {
     id = 0;
@@ -11,7 +12,7 @@ class Chat extends React.Component {
             data: Map(
                 {
                     msgs: [
-                        
+
                     ]
                 }
             )
@@ -20,13 +21,24 @@ class Chat extends React.Component {
     }
 
     userMsg = '';
+    emilyMsg = '';
 
     putUserMsg = (msg) => {
         const { data } = this.state;
         const msgs = [...data.get('msgs')];
-        let userMsg = { id: ++this.id, user: 'user', text: msg};
+        let userMsg = { id: ++this.id, user: 'user', text: msg };
+        let answerList = Map({
+            aaa: 'answer A',
+            bbb: 'answer B',
+            ccc: 'answer C'
+        });
+
+        let text = answerList.get(msg) != undefined ?
+            answerList.get(msg) : '잘 모르는 말이에요.';
+        let emilyMsg = { id: ++this.id, user: 'emily', text: text };
         msgs.push(userMsg);
-        if(msg !== null && msg !== '' && this.userMsg !== msg){
+        msgs.push(emilyMsg);
+        if (msg !== null && msg !== '' && this.userMsg !== msg) {
             this.setState(
                 {
                     data: Map(
@@ -40,16 +52,14 @@ class Chat extends React.Component {
         this.userMsg = msg;
     }
 
-    async putEmilyMsg(msg) {
-        return 'Emily Msg';
-    }
-
     render() {
         const { data } = this.state;
-        
+
         return (
-            <div>
-                {[...data.get('msgs')].map((msg, i) => {
+
+            <div className="chatPane">
+                
+                    {[...data.get('msgs')].map((msg, i) => {
                         return (
                             <ChatPane
                                 user={msg.user}
@@ -58,9 +68,10 @@ class Chat extends React.Component {
                             />
                         );
                     }
-                )}
+                    )}
                 
-                <TextInput 
+
+                <TextInput
                     putUserMsg={this.putUserMsg}
                 />
             </div>
@@ -85,13 +96,13 @@ class TextInput extends React.Component {
 
     constructor(props) {
         super(props);
-        
+
         this.state = {
             data: Map({
                 value: ''
             })
         };
-        
+
         this.handleKeyPress = this.handleKeyPress.bind(this);
     }
 
@@ -103,7 +114,7 @@ class TextInput extends React.Component {
 
     handleKeyPress = (e) => {
         const { data } = this.state;
-        if(e.charCode === 13) {
+        if (e.charCode === 13) {
             this.setState({
                 data: data.set('value', e.target.value)
             });
@@ -136,19 +147,60 @@ class ChatPane extends React.Component {
         super(props);
     }
     render() {
-        return (
-            <Fragment>
-                <Card border="primary" style={{ width: '18rem', right: 0, }}>
-                    <Card.Header>{this.props.user}</Card.Header>
-                    <Card.Body>
-                        <Card.Text>
-                            {this.props.text}
-                        </Card.Text>
-                    </Card.Body>
-                </Card>
-            </Fragment>
-        )
+        if (this.props.user == 'user') {
+            return (
+                <Fragment>
+
+                    <Toast>
+                        <Toast.Header>
+                            <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" />
+                            <strong className="mr-auto">{this.props.user}</strong>
+                            <small>just now</small>
+                        </Toast.Header>
+                        <Toast.Body>{this.props.text}</Toast.Body>
+                    </Toast>
+
+                </Fragment>
+            );
+        }
+        else if (this.props.user == 'emily') {
+            return (
+                <div
+                    aria-live="polite"
+                    aria-atomic="true"
+                    style={{
+                        position: 'relative',
+                        minHeight: '100px',
+                    }}
+                >
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                        }}
+                    >
+                        <Toast>
+                            <Toast.Header>
+                                <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" />
+                                <strong className="mr-auto">{this.props.user}</strong>
+                                <small>just now</small>
+                            </Toast.Header>
+                            <Toast.Body>{this.props.text}</Toast.Body>
+                        </Toast>
+                    </div>
+                </div>
+            );
+        }
+
     }
 }
 
 export default Chat;
+
+
+
+
+
+
+
