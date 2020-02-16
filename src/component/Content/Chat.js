@@ -2,9 +2,10 @@ import React, { Fragment } from 'react';
 import { InputGroup, FormControl, Button, Card, Toast } from 'react-bootstrap';
 import { List, Map } from 'immutable';
 import './Chat.css';
+import Scrollbar from '../Element/Scrollbar';
 
 class Chat extends React.Component {
-    id = 0;
+
     constructor(props) {
         super(props);
 
@@ -20,8 +21,14 @@ class Chat extends React.Component {
         this.putUserMsg = this.putUserMsg.bind(this);
     }
 
+    componentDidMount() {
+
+    }
+
+    id = 0;
     userMsg = '';
     emilyMsg = '';
+    messagesEnd;
 
     putUserMsg = (msg) => {
         const { data } = this.state;
@@ -50,26 +57,44 @@ class Chat extends React.Component {
             );
         }
         this.userMsg = msg;
+
     }
 
     render() {
         const { data } = this.state;
+        const { msgs } = [...data.get('msgs')];
 
         return (
 
             <div className="chatPane">
-                
-                    {[...data.get('msgs')].map((msg, i) => {
-                        return (
-                            <ChatPane
-                                user={msg.user}
-                                text={msg.text}
-                                key={i}
-                            />
-                        );
+                <Scrollbar>
+
+                    {/* {
+                        msgs.map((msg) => {
+                            return (
+                                <ChatPane
+                                    user={msg.user}
+                                    text={msg.text}
+                                    key={msg.id}
+                                />
+                            );
+                        })
+                    } */}
+
+                    {
+                        [...data.get('msgs')].map((msg) => {
+                            console.log([...data.get('msgs')].length === msg.id);
+
+                            return (
+                                <ChatPane
+                                    user={msg.user}
+                                    text={msg.text}
+                                    key={msg.id}
+                                />
+                            );
+                        })
                     }
-                    )}
-                
+                </Scrollbar>
 
                 <TextInput
                     putUserMsg={this.putUserMsg}
@@ -126,7 +151,7 @@ class TextInput extends React.Component {
         return (
             <Fragment>
                 <InputGroup className="mb-3">
-                    <FormControl
+                    <FormControl ref={this.textInput}
                         placeholder="entry any value..."
                         aria-label="Recipient's username"
                         aria-describedby="basic-addon2"
@@ -146,6 +171,7 @@ class ChatPane extends React.Component {
     constructor(props) {
         super(props);
     }
+
     render() {
         if (this.props.user == 'user') {
             return (
@@ -159,7 +185,6 @@ class ChatPane extends React.Component {
                         </Toast.Header>
                         <Toast.Body>{this.props.text}</Toast.Body>
                     </Toast>
-
                 </Fragment>
             );
         }
@@ -180,7 +205,7 @@ class ChatPane extends React.Component {
                             right: 0,
                         }}
                     >
-                        <Toast>
+                        <Toast ref={this.chatRef}>
                             <Toast.Header>
                                 <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" />
                                 <strong className="mr-auto">{this.props.user}</strong>
@@ -192,7 +217,6 @@ class ChatPane extends React.Component {
                 </div>
             );
         }
-
     }
 }
 
